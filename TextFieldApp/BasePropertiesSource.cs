@@ -13,9 +13,32 @@ namespace TextFieldApp
 
 		protected readonly T _instance;
 
+		protected List<UIColor> _colorList = new List<UIColor> ();
+
 		protected BasePropertiesSource(T instance)
 		{
 			_instance = instance;
+
+			_colorList = CreateColorList ();
+
+		}
+
+		List<UIColor> CreateColorList ()
+		{
+			var colorProperties = typeof(UIColor).GetProperties (BindingFlags.Public | BindingFlags.Static).Where (info => info.PropertyType == typeof(UIColor)).ToList ();
+			var tempList = new List<UIColor> ();
+			colorProperties.ForEach (info => tempList.Add (info.GetValue (null) as UIColor));
+			var colorList = new List<UIColor> ();
+			foreach (var tempColor in tempList)
+			{
+				var tempColor1 = tempColor;
+				int index = colorList.FindIndex (color => ColorsMatch (tempColor1, color));
+				if (index < 0 || index >= colorList.Count)
+				{
+					colorList.Add (tempColor);
+				}
+			}
+			return colorList;
 		}
 
 		protected static Type[] CreateTypesArray (Type type)
@@ -65,6 +88,10 @@ namespace TextFieldApp
 
 		string GetCellReuseIdentifierForProperty(PropertyInfo propertyInfo)
 		{
+			if (propertyInfo.PropertyType == typeof(UIColor))
+			{
+				return ColorPropertyCell.ReuseIdentifier;
+			}
 			if (propertyInfo.PropertyType == typeof(bool))
 			{
 				return BooleanPropertyCell.ReuseIdentifier;
@@ -105,9 +132,13 @@ namespace TextFieldApp
 			{
 				IncrementBoolValue (propertyInfo);
 			}
+			else if (propertyInfo.PropertyType == typeof(UIColor))
+			{
+				IncrementColorValue (propertyInfo);
+			}
 		}
 
-		protected void IncrementEnumValue (PropertyInfo propertyInfo)
+		void IncrementEnumValue (PropertyInfo propertyInfo)
 		{
 			var values = propertyInfo.PropertyType.GetEnumValues ();
 			var currentValue = propertyInfo.GetValue (_instance);
@@ -117,10 +148,39 @@ namespace TextFieldApp
 			propertyInfo.SetValue (_instance, nextValue);
 		}
 
-		protected void IncrementBoolValue (PropertyInfo propertyInfo)
+		void IncrementBoolValue (PropertyInfo propertyInfo)
 		{
 			bool currentValue = (bool)propertyInfo.GetValue (_instance);
 			propertyInfo.SetValue (_instance, !currentValue);
+		}
+
+		void IncrementColorValue (PropertyInfo propertyInfo)
+		{
+			var currentValue = propertyInfo.GetValue (_instance) as UIColor;
+			if (currentValue == null)
+			{
+				throw new Exception ("Color property was not a color!");
+			}
+
+			UIColor newValue;
+			int index = _colorList.FindIndex (color => ColorsMatch (currentValue, color));
+			if (0 <= index && index < _colorList.Count)
+			{
+				int newIndex = (index + 1) % _colorList.Count;
+				newValue = _colorList [newIndex];
+			}
+			else
+			{
+				newValue = UIColor.Black;
+			}
+			propertyInfo.SetValue (_instance, newValue);
+		}
+
+		bool ColorsMatch (UIColor one, UIColor two)
+		{
+			var oneComp = one.CGColor.Components;
+			var twoComp = two.CGColor.Components;
+			return oneComp.SequenceEqual (twoComp);
 		}
 
 		protected void CallOnChange ()

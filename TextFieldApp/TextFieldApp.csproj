@@ -120,6 +120,10 @@
     <Compile Include="IPropertyCell.cs" />
     <Compile Include="BasePropertiesSource.cs" />
     <Compile Include="ClassPropertiesFlattenedSource.cs" />
+    <Compile Include="ColorPropertyCell.cs" />
+    <Compile Include="ColorPropertyCell.designer.cs">
+      <DependentUpon>ColorPropertyCell.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainStoryboard_iPhone.storyboard" />

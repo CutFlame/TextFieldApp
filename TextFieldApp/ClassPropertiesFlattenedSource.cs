@@ -13,7 +13,6 @@ namespace TextFieldApp
 
 		public ClassPropertiesFlattenedSource(T instance) : base(instance)
 		{
-			_instance = instance;
 			_type = typeof(T);
 			const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public;
 			_properties = CreatePropertiesArray (_type, bindingFlags);
