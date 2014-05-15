@@ -117,6 +117,9 @@
     <Compile Include="BooleanPropertyCell.designer.cs">
       <DependentUpon>BooleanPropertyCell.cs</DependentUpon>
     </Compile>
+    <Compile Include="IPropertyCell.cs" />
+    <Compile Include="BasePropertiesSource.cs" />
+    <Compile Include="ClassPropertiesFlattenedSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainStoryboard_iPhone.storyboard" />

@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Drawing;
-
-using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using System.Threading.Tasks;
 
 namespace TextFieldApp
 {
 	public partial class TextFieldAppViewController : UIViewController
 	{
-		ClassPropertiesSource<UITextField> _source;
-
-		TextFieldTraits _textFieldTraits;
+		ClassPropertiesSource<TextFieldTraits> _source;
+		readonly TextFieldTraits _textFieldTraits;
 
 		static bool UserInterfaceIdiomIsPhone
 		{
@@ -23,22 +18,22 @@ namespace TextFieldApp
 			_textFieldTraits = new TextFieldTraits ();
 		}
 
-		#region View lifecycle
-
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
 
-			_source = new ClassPropertiesSource<UITextField> (TextField);
-			_source.OnChange = HandleOnChange;
+			_source = new ClassPropertiesSource<TextFieldTraits> (_textFieldTraits);
 			TableView.Source = _source;
+			_source.OnChange = HandleOnChange;
 
-			TextField.EditingChanged += HandleEditingChanged;
-			//ApplyChangesToTextField ();
+			_textFieldTraits.CopyAllValuesFrom (TextField);
+			//TextField.EditingChanged += HandleEditingChanged;
+			TextField.ShouldReturn = HandleShouldReturn;
 		}
 
 		void HandleEditingChanged (object sender, EventArgs e)
 		{
+			_textFieldTraits.CopyAllValuesFrom (TextField);
 			TableView.ReloadData ();
 		}
 
@@ -51,7 +46,7 @@ namespace TextFieldApp
 				TextField.ResignFirstResponder ();
 			}
 
-			//ApplyChangesToTextField ();
+			_textFieldTraits.CopyAllValuesTo (TextField);
 			TableView.ReloadData ();
 
 			if(isFirstResponder)
@@ -60,30 +55,22 @@ namespace TextFieldApp
 			}
 		}
 
-		void ApplyChangesToTextField()
+		bool HandleShouldReturn (UITextField textField)
 		{
-			TextField.AutocapitalizationType = _textFieldTraits.AutocapitalizationType;
-			TextField.AutocorrectionType = _textFieldTraits.AutocorrectionType;
-			TextField.EnablesReturnKeyAutomatically = _textFieldTraits.EnablesReturnKeyAutomatically;
-			TextField.KeyboardAppearance = _textFieldTraits.KeyboardAppearance;
-			TextField.KeyboardType = _textFieldTraits.KeyboardType;
-			TextField.ReturnKeyType = _textFieldTraits.ReturnKeyType;
-			TextField.SecureTextEntry = _textFieldTraits.SecureTextEntry;
-			TextField.ClearButtonMode = _textFieldTraits.ClearButtonMode;
-			TextField.BorderStyle = _textFieldTraits.BorderStyle;
-			TextField.LeftViewMode = _textFieldTraits.LeftViewMode;
-			TextField.Placeholder = _textFieldTraits.Placeholder;
-			TextField.RightViewMode = _textFieldTraits.RightViewMode;
-			TextField.SpellCheckingType = _textFieldTraits.SpellCheckingType;
-			TextField.Enabled = _textFieldTraits.Enabled;
-			TextField.Highlighted = _textFieldTraits.Highlighted;
-			TextField.HorizontalAlignment = _textFieldTraits.HorizontalAlignment;
-			TextField.Selected = _textFieldTraits.Selected;
-			TextField.VerticalAlignment = _textFieldTraits.VerticalAlignment;
-			TextField.ContentMode = _textFieldTraits.ContentMode;
+			textField.ResignFirstResponder ();
+			_textFieldTraits.CopyAllValuesFrom (TextField);
+			TableView.ReloadData ();
+			return true;
 		}
 
-		#endregion
+		protected override void Dispose (bool disposing)
+		{
+			if(disposing)
+			{
+				TextField.EditingChanged -= HandleEditingChanged;
+			}
+			base.Dispose (disposing);
+		}
 	}
 }
 
