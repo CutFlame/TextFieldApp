@@ -4,7 +4,7 @@ using MonoTouch.UIKit;
 
 namespace TextFieldApp
 {
-	public partial class BooleanPropertyCell : UITableViewCell, IPropertyCell
+	public partial class BooleanPropertyCell : PropertyCell<bool>
 	{
 		public static new string ReuseIdentifier = "BooleanPropertyCellReuseIdentifier";
 
@@ -14,35 +14,29 @@ namespace TextFieldApp
 
 		#region IPropertyCell implementation
 
-		public void UpdatePropertyInfo (PropertyInfo propertyInfo, object instance)
+		protected override void UpdateNameAndTypeLabels (PropertyInfo propertyInfo, bool readOnly)
 		{
 			PropertyNameLabel.Text = propertyInfo.Name;
 			PropertyTypeLabel.Text = propertyInfo.PropertyType.Name;
-			bool error = false;
-			bool value = false;
-			try
-			{
-				value = (bool)propertyInfo.GetValue (instance);
-			}
-			catch
-			{
-				error = true;
-			}
-
+			UIColor color = readOnly ? UIColor.Gray : UIColor.Black;
+			PropertyNameLabel.TextColor = color;
+			PropertyTypeLabel.TextColor = color;
 			PropertyValueSwitch.Enabled = false;
-			if(error)
-			{
-				PropertyValueSwitch.TintColor = UIColor.Red;
-				PropertyValueSwitch.OnTintColor = UIColor.Red;
-				PropertyValueSwitch.ThumbTintColor = UIColor.Red;
-			}
-			else
-			{
-				PropertyValueSwitch.TintColor = null;
-				PropertyValueSwitch.OnTintColor = null;
-				PropertyValueSwitch.ThumbTintColor = null;
-				PropertyValueSwitch.On = value;
-			}
+		}
+
+		protected override void UpdateLabelsForError ()
+		{
+			PropertyValueSwitch.TintColor = UIColor.Red;
+			PropertyValueSwitch.OnTintColor = UIColor.Red;
+			PropertyValueSwitch.ThumbTintColor = UIColor.Red;
+		}
+
+		protected override void UpdateLabelsForValue (bool value)
+		{
+			PropertyValueSwitch.TintColor = null;
+			PropertyValueSwitch.OnTintColor = null;
+			PropertyValueSwitch.ThumbTintColor = null;
+			PropertyValueSwitch.On = value;
 		}
 
 		#endregion

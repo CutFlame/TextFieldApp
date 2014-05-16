@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using System.Collections.Generic;
 
 namespace TextFieldApp
 {
@@ -25,20 +25,12 @@ namespace TextFieldApp
 
 		List<UIColor> CreateColorList ()
 		{
-			var colorProperties = typeof(UIColor).GetProperties (BindingFlags.Public | BindingFlags.Static).Where (info => info.PropertyType == typeof(UIColor)).ToList ();
-			var tempList = new List<UIColor> ();
-			colorProperties.ForEach (info => tempList.Add (info.GetValue (null) as UIColor));
-			var colorList = new List<UIColor> ();
-			foreach (var tempColor in tempList)
-			{
-				var tempColor1 = tempColor;
-				int index = colorList.FindIndex (color => ColorsMatch (tempColor1, color));
-				if (index < 0 || index >= colorList.Count)
-				{
-					colorList.Add (tempColor);
-				}
-			}
-			return colorList;
+			var colorValues = ReflectionExtensions.GetStaticInstances<UIColor> ();
+
+			//Eliminate duplicates
+			var colorList = colorValues.RemoveDuplicates (ColorsMatch);
+
+			return colorList.ToList ();
 		}
 
 		protected static Type[] CreateTypesArray (Type type)
@@ -81,8 +73,18 @@ namespace TextFieldApp
 			var propertyInfo = GetPropertyInfoFromIndexPath (indexPath);
 			var reuseIdentifier = GetCellReuseIdentifierForProperty (propertyInfo);
 			var cell = tableView.DequeueReusableCell (reuseIdentifier);
-			var iProperty = (IPropertyCell)cell;
-			iProperty.UpdatePropertyInfo (propertyInfo, _instance);
+			try
+			{
+				var iProperty = (IPropertyCell)cell;
+				iProperty.Update (propertyInfo, _instance);
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine (ex);
+			}
+			finally
+			{
+			}
 			return cell;
 		}
 

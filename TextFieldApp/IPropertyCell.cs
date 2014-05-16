@@ -4,7 +4,7 @@ namespace TextFieldApp
 {
 	public interface IPropertyCell
 	{
-		void UpdatePropertyInfo (PropertyInfo propertyInfo, object instance);
+		void Update (PropertyInfo propertyInfo, object instance);
 	}
 	
 }
