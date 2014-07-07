@@ -3,8 +3,8 @@ TextFieldApp
 
 A small app that shows many of the properties of a UITextField and allows you to tweak them and see the result instantly.
 
-[![sample1](https://raw.github.com/CutFlame/TextFieldApp/master/ScreenShots/shot1.png)](https://raw.github.com/CutFlame/TextFieldApp/master/ScreenShots/shot1.png)
-[![sample2](https://raw.github.com/CutFlame/TextFieldApp/master/ScreenShots/shot2.png)](https://raw.github.com/CutFlame/TextFieldApp/master/ScreenShots/shot2.png)
+[![sample1](https://raw.github.com/CutFlame/TextFieldApp/master/ScreenShots/shot1-small.png)](https://raw.github.com/CutFlame/TextFieldApp/master/ScreenShots/shot1.png)
+[![sample2](https://raw.github.com/CutFlame/TextFieldApp/master/ScreenShots/shot2-small.png)](https://raw.github.com/CutFlame/TextFieldApp/master/ScreenShots/shot2.png)
 
 ### Sensible Uses for this app: ###
 
